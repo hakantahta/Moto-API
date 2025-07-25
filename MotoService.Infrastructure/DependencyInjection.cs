@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MotoService.Application.Common.Interfaces;
 using MotoService.Application.Customers.Interfaces;
+using MotoService.Application.Motorcycles.Interfaces;
 using MotoService.Infrastructure.Persistence;
 using MotoService.Infrastructure.Repositories;
 
@@ -21,6 +22,7 @@ public static class DependencyInjection
         // Repositories
         services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
         services.AddScoped<ICustomerRepository, CustomerRepository>();
+        services.AddScoped<IMotorcycleRepository, MotorcycleRepository>();
 
         return services;
     }

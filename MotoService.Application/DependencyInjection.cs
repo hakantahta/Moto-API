@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using AutoMapper;
 using MotoService.Application.Customers.Interfaces;
 using MotoService.Application.Customers.Services;
+using MotoService.Application.Motorcycles.Interfaces;
+using MotoService.Application.Motorcycles.Services;
 
 public static class DependencyInjection
 {
@@ -14,6 +16,7 @@ public static class DependencyInjection
         
         // Register services
         services.AddScoped<ICustomerService, CustomerService>();
+        services.AddScoped<IMotorcycleService, MotorcycleService>();
         
         return services;
     }
