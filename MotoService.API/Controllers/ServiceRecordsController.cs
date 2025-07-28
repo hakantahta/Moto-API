@@ -1,8 +1,9 @@
-namespace MotoService.API.Controllers;
-
 using Microsoft.AspNetCore.Mvc;
+using MotoService.Application.Common;
 using MotoService.Application.ServiceRecords.DTOs;
 using MotoService.Application.ServiceRecords.Interfaces;
+
+namespace MotoService.API.Controllers;
 
 [ApiController]
 [Route("api/records")]
@@ -16,38 +17,38 @@ public class ServiceRecordsController : ControllerBase
     }
 
     [HttpGet("by-motorcycle/{motorcycleId}")]
-    public async Task<ActionResult<IEnumerable<ServiceRecordDto>>> GetByMotorcycleId(Guid motorcycleId)
+    public async Task<ActionResult<ApiResponse<IEnumerable<ServiceRecordDto>>>> GetByMotorcycleId(Guid motorcycleId)
     {
         var serviceRecords = await _serviceRecordService.GetByMotorcycleIdAsync(motorcycleId);
-        return Ok(serviceRecords);
+        return Ok(ApiResponse<IEnumerable<ServiceRecordDto>>.CreateSuccess(serviceRecords));
     }
 
     [HttpPost]
-    public async Task<ActionResult<ServiceRecordDto>> Create(CreateServiceRecordRequest request)
+    public async Task<ActionResult<ApiResponse<ServiceRecordDto>>> Create(CreateServiceRecordRequest request)
     {
         var serviceRecord = await _serviceRecordService.CreateAsync(request);
-        return CreatedAtAction(nameof(GetByMotorcycleId), new { motorcycleId = serviceRecord.MotorcycleId }, serviceRecord);
+        return CreatedAtAction(nameof(GetByMotorcycleId), new { motorcycleId = serviceRecord.MotorcycleId }, ApiResponse<ServiceRecordDto>.CreateSuccess(serviceRecord));
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<ServiceRecordDto>> Update(Guid id, UpdateServiceRecordRequest request)
+    public async Task<ActionResult<ApiResponse<ServiceRecordDto>>> Update(Guid id, UpdateServiceRecordRequest request)
     {
         var serviceRecord = await _serviceRecordService.UpdateAsync(id, request);
-        
+
         if (serviceRecord == null)
-            return NotFound();
-            
-        return Ok(serviceRecord);
+            return NotFound(ApiResponse<ServiceRecordDto>.CreateFailure("Service record not found."));
+
+        return Ok(ApiResponse<ServiceRecordDto>.CreateSuccess(serviceRecord));
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult> Delete(Guid id)
+    public async Task<ActionResult<ApiResponse<object>>> Delete(Guid id)
     {
         var result = await _serviceRecordService.DeleteAsync(id);
-        
+
         if (!result)
-            return NotFound();
-            
-        return NoContent();
+            return NotFound(ApiResponse<object>.CreateFailure("Service record not found."));
+
+        return Ok(ApiResponse<object>.CreateSuccess(null, "Service record deleted successfully."));
     }
 }
